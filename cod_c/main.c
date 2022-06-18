@@ -13,6 +13,18 @@
 #define RESET   "\x1b[0m"
 #define clrscr() printf("\e[1;1H\e[2J")
 
+int recv_size, etc, etc2, escolha, escolhaLE, escolhaLES, escolhaAT;
+char *message , server_reply[2000], string[4];
+
+void menuPrincipal(){
+    
+    printf("\n\nO que fazer?\n");
+    printf("1 - Ler dados\n");
+    printf("2 - Enviar comandos\n");
+    scanf("%d", &escolha);
+
+}
+
 int main(int argc , char *argv[])
 {
     /*################################## CONEXÃO ##################################*/
@@ -24,8 +36,8 @@ int main(int argc , char *argv[])
     SOCKET s;
     
     struct sockaddr_in server;
-    char *message , server_reply[2000], string[4];
-    int recv_size, etc, etc2, escolha, escolhaLE, escolhaLES, escolhaAT;
+
+    
     
     printf("\nInitialising Winsock...");
     if (WSAStartup(MAKEWORD(2,2),&wsa) != 0)
@@ -58,17 +70,14 @@ int main(int argc , char *argv[])
     puts("Connected");
     /*#############################################################################*/
 
-    printf("\n\nO que fazer?\n");
-    printf("1 - Ler dados\n");
-    printf("2 - Enviar comandos\n");
-    scanf("%d", &escolha);
+    menuPrincipal();
 
     switch (escolha){
         case 1:
             clrscr();
             printf("\n\nO que fazer?\n");
             printf("1 - Ler dados\n");
-            printf("2 - Ler dados em serie (max 8)\n");
+            printf("2 - Ler dados em serie (max 3)\n");
             scanf("%d", &escolhaLE);
 
             switch (escolhaLE)
