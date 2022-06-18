@@ -35,9 +35,6 @@ int d = 0;
 char c;
 
 //Pinos
-int LEDVermelho = 7;
-int LEDAzul = 6;
-int LEDVerde = 5;
 int Buzzer = 4;
 
 
@@ -46,9 +43,6 @@ void setup()
     Ethernet.begin(mac, ip);  // initialize Ethernet device
     server.begin();           // start to listen for clients
 
-    pinMode(LEDVermelho, OUTPUT);
-    pinMode(LEDAzul, OUTPUT);
-    pinMode(LEDVerde, OUTPUT);
     pinMode(Buzzer, OUTPUT);
     
     
@@ -73,32 +67,20 @@ void loop()
                 } 
                 
                 if(comando.charAt(0) == 'R'){
-                    digitalWrite(LEDVermelho, LOW);
-                    digitalWrite(LEDVerde, LOW);
-                    digitalWrite(LEDAzul, LOW);
                     noTone(Buzzer);
                 }
 
                 if(comando.charAt(0) == 'A' && comando.charAt(1) == 'L'){
 
                   if(comando.charAt(2) == 'V' && comando.charAt(3) == 'R'){
-                        digitalWrite(LEDVermelho, HIGH);
-                        digitalWrite(LEDVerde, LOW);
-                        digitalWrite(LEDAzul, LOW);
                         noTone(Buzzer);
                   }
 
                   if(comando.charAt(2) == 'V' && comando.charAt(3) == 'D'){
-                        digitalWrite(LEDVerde, HIGH);
-                        digitalWrite(LEDVermelho, LOW);
-                        digitalWrite(LEDAzul, LOW);
                         noTone(Buzzer);
                   }
 
                   if(comando.charAt(2) == 'A' && comando.charAt(3) == 'Z'){
-                        digitalWrite(LEDAzul, HIGH);
-                        digitalWrite(LEDVermelho, LOW);
-                        digitalWrite(LEDVerde, LOW);
                         noTone(Buzzer);
                   }
           
@@ -107,30 +89,11 @@ void loop()
                 
                 if(comando.charAt(0) == 'A' && comando.charAt(1) == 'B'){
 
-                  
-                    digitalWrite(LEDVermelho, LOW);
-                    digitalWrite(LEDVerde, LOW);
-                    digitalWrite(LEDAzul, LOW);
                     tone(Buzzer,1500);   
                     delay(1000);
                     noTone(Buzzer);
                 }
 
-                    client.println("HTTP/1.1 200 OK");
-                    client.println("Content-Type: text/html");
-                    client.println("Connection: close");
-                    client.println();
-                    // send web page
-                    client.println("<!DOCTYPE html>");
-                    client.println("<html>");
-                    client.println("<head>");
-                    client.println("<title>Arduino Web Page</title>");
-                    client.println("</head>");
-                    client.println("<body>");
-                    client.println("<h1>Hello from Arduino!</h1>");
-                    client.println("<p>A web page from the Arduino server</p>");
-                    client.println("</body>");
-                    client.println("</html>");
 
                 // last line of client request is blank and ends with \n
                 // respond to client only after last line received
