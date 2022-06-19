@@ -16,8 +16,8 @@ SOCKET s;
 
 void Sair(){
     clrscr();
-    message = "EXIT#";
-    send(s , message , strlen(message) , 0);
+    //message = "EXIT#";
+    //send(s , message , strlen(message) , 0);
     return;
 }
 
@@ -48,7 +48,7 @@ void MenuPrincipal(){
 
 void MenuEscolhaLeitura(){
     clrscr();
-    message = "L";
+    //message = "L";
     printf("\n\nO que fazer?\n");
     printf("1 - Ler sensor\n");
     printf("2 - Ler atuador\n");
@@ -59,11 +59,12 @@ void MenuEscolhaLeitura(){
     switch (escolha)
     {
     case 1:
-        strcat(message, "0");
+        //strcat(message, "0");
+        printf("%d", escolha);
         MenuLeitura();
         break;
     case 2:
-        strcat(message, "1");
+        //strcat(message, "1");
         MenuLeitura();
         break;
     case 3:
@@ -91,21 +92,21 @@ void MenuLeitura(){
     switch (escolha)
     {
     case 1:
-        strcat(message, "001");
+        //strcat(message, "001");
         break;
     case 2:
         clrscr();
         printf("\nInsira \"V\" para retornar ao menu anterior ou \"S\" para encerrar a conexão\nInsira abaixo a quantidade leituras em série desejada: (2 a 4)\n");
         scanf("%d", &qtdLeitura);
 
-        if(qtdLeitura == "V"){
+        if(qtdLeitura[0] == "V"){
             MenuLeitura();
-        }else if(qtdLeitura == "S"){
+        }else if(qtdLeitura[0] == "S"){
             Sair();
         }
 
-        strcat(message, "00");
-        strcat(message, qtdLeitura);
+        //strcat(message, "00");
+        //strcat(message, qtdLeitura);
         break;
     case 3:
         MenuEscolhaLeitura();
@@ -118,13 +119,13 @@ void MenuLeitura(){
         break;
     }
 
-    strcat(message, "#");
+    //strcat(message, "#");
 
-    send(s , message , strlen(message) , 0);
+    //send(s , message , strlen(message) , 0);
 }
 
 void MenuAtuador(){
-    message = "A0";
+    //message = "A0";
     printf("\nInsira \"V\" para retornar ao menu anterior ou \"S\" para encerrar a conexão\nInsira abaixo o valor correspondente à porcentagem de atuação desejada\n");
     scanf("%d", &qtdAtuacao);
 
@@ -134,16 +135,16 @@ void MenuAtuador(){
         Sair();
     }
 
-    strcat(message, qtdAtuacao);
+    //strcat(message, qtdAtuacao);
 
-    strcat(message, "#");
+    //strcat(message, "#");
 
-    send(s , message , strlen(message) , 0);
+    //send(s , message , strlen(message) , 0);
 }
 
 int main(int argc , char *argv[])
 {
-    /*################################## CONEXÃO ##################################*/
+    /*################################## CONEXÃO ##################################
     clrscr();
     setvbuf(stdout, NULL, _IONBF, 0);
 	setvbuf(stderr, NULL, _IONBF, 0);
@@ -184,16 +185,17 @@ int main(int argc , char *argv[])
     puts(server_reply);
     /*#############################################################################*/
 
-    do
-    {
-        if(message == "EXIT#"){
-            break;
-        }else{
-            MenuPrincipal();
-        }
+    // do
+    // {
+    //     if(message == "EXIT#"){
+    //         break;
+    //     }else{
+    //         MenuPrincipal();
+    //     }
         
-    } while (message != "EXIT#");
+    // } while (message != "EXIT#");
     
+            MenuPrincipal();
 
     
     
