@@ -1,48 +1,73 @@
-/*--------------------------------------------------------------
-  Program:      eth_websrv_page
-
-  Description:  Arduino web server that serves up a basic web
-                page. Does not use the SD card.
-  
-  Hardware:     Arduino Uno and official Arduino Ethernet
-                shield. Should work with other Arduinos and
-                compatible Ethernet shields.
-                
-  Software:     Developed using Arduino 1.0.3 software
-                Should be compatible with Arduino 1.0 +
-  
-  References:   - WebServer example by David A. Mellis and 
-                  modified by Tom Igoe
-                - Ethernet library documentation:
-                  http://arduino.cc/en/Reference/Ethernet
-
-  Date:         7 January 2013
- 
-  Author:       W.A. Smith, http://startingelectronics.org
---------------------------------------------------------------*/
-
 #include <SPI.h>
 #include <Ethernet.h>
+#include <string.h>
+#include <DHT.h>
 #define RESET asm ("jmp (0x0000)")
+#define DHTPIN 5//Pino digital 5 conectado ao DHT11
+#define DHTTYPE DHT11//DHT 11
 
 // MAC address from Ethernet shield sticker under board
-byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
+byte mac[]= { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
 IPAddress ip(192, 168, 0, 116); // IP address, may need to change depending on network
 EthernetServer server(80);  // create a server at port 80
 
+
+
+
 String comando;
+String grupo = "GTZ08#";
+String erro = "ERRO#";
+String mensagem;
 int d = 0;
-char c;
+String valBuzzer = "000";
+String val;
+String confereErro;
 
 //Pinos
 int Buzzer = 4;
+DHT dht(DHTPIN, DHTTYPE);//Inicializando o objeto dht do tipo DHT passando como parâmetro o pino (DHTPIN) e o tipo do sensor (DHTTYPE)
+
+//Funções
+void ApitarBuzzer(int porcentagem){
+    int frequencia = porcentagem*15;
+    tone(Buzzer, frequencia);
+    String aux = String(porcentagem);
+    int tal = aux.length();
+    
+    switch (tal)
+    {
+    case 1:
+        mensagem.concat("00");
+        mensagem.concat(String(porcentagem));
+        valBuzzer = "";
+        valBuzzer.concat("00");
+        valBuzzer = String(porcentagem);
+        break;
+    case 2:
+        mensagem.concat("0");
+        mensagem.concat(String(porcentagem));
+        valBuzzer = "";
+        valBuzzer.concat("0");
+        valBuzzer = String(porcentagem);
+        break;
+    case 3:
+        mensagem.concat(String(porcentagem));
+        valBuzzer = "";
+        valBuzzer = String(porcentagem);
+        break;
+    
+    default:
+        break;
+    }
+}
+
 
 
 void setup()
 {
     Ethernet.begin(mac, ip);  // initialize Ethernet device
     server.begin();           // start to listen for clients
-
+    dht.begin();
     pinMode(Buzzer, OUTPUT);
     
     
@@ -59,62 +84,137 @@ void loop()
             if (client.available()) {   // client data available to read
                 
                 //read char by char HTTP request
-                while (d < 10) {
-                  c = client.read();
-                  //store characters to string 
-                  comando += c; 
-                  d++;
-                } 
-                
-                if(comando.charAt(0) == 'R'){
-                    noTone(Buzzer);
-                }
 
-                if(comando.charAt(0) == 'A' && comando.charAt(1) == 'L'){
+                char c = client.read();
 
-                  if(comando.charAt(2) == 'V' && comando.charAt(3) == 'R'){
+                switch (c)
+                {
+                case 'G':
+                    client.println(grupo);
+                    break;
+                case 'E':
                         noTone(Buzzer);
-                  }
+                            client.stop(); // close the connection
 
-                  if(comando.charAt(2) == 'V' && comando.charAt(3) == 'D'){
-                        noTone(Buzzer);
-                  }
+                    // for (int i = 0; i < 4; i++)
+                    // {
+                    //     c = client.read();
+                    //     confereErro += c;
 
-                  if(comando.charAt(2) == 'A' && comando.charAt(3) == 'Z'){
-                        noTone(Buzzer);
-                  }
-          
-                  
-                }
-                
-                if(comando.charAt(0) == 'A' && comando.charAt(1) == 'B'){
-
-                    tone(Buzzer,1500);   
-                    delay(1000);
-                    noTone(Buzzer);
-                }
-
-
-                // last line of client request is blank and ends with \n
-                // respond to client only after last line received
-                if (c == '\n' && currentLineIsBlank) {
+                    //     if(confereErro == "XIT#"){
+                    //         noTone(Buzzer);
+                    //         client.stop(); // close the connection
+                    //     }else{
+                    //         client.println(erro);
+                    //     }
+                    // }
                     
                     break;
+                case 'L':
+                    c = client.read();
+                    switch (c)
+                    {
+                    case '1':
+                        mensagem = "T";
+                        c = client.read();
+                        c = client.read();
+                        c = client.read();
+                        int valor = c - '0';
+
+
+                         for (int i = 0; i < valor; i++)
+                         {
+                            String aux = String((int)dht.readTemperature());
+                            int tal = aux.length();
+
+                            switch (tal)
+                            {
+                            case 2:
+                                mensagem.concat("00");
+                                mensagem.concat(String((int)dht.readTemperature()));
+                                break;
+                            case 3:
+                                mensagem.concat("0");
+                                mensagem.concat(String((int)dht.readTemperature()));
+                                break;
+
+                            default:
+                                break;
+                            }
+                        }
+                        mensagem.concat('C');
+                        mensagem.concat('#');
+                        client.println(mensagem);
+                        mensagem = "";
+                        break;
+                    case '0':
+                        mensagem = "Z0";
+                        c = client.read();
+                        c = client.read();
+                        c = client.read();
+                        int valor2 = c - '0';
+
+                        for (int i = 0; i < valor2; i++)
+                        {
+                            mensagem.concat(valBuzzer);
+                        }
+
+                        mensagem.concat('P');
+                        mensagem.concat('#');
+                        client.println(mensagem);
+                        mensagem = ""; 
+                        break;
+                    
+                    default:
+                        client.println(erro);
+                        break;
+                    }
+                    
+
+                    break;
+                case 'A':
+                    mensagem = "Z0";
+                    c = client.read();
+                    switch (c)
+                    {
+                    case '0':
+                        
+                        for (int i = 0; i < 3; i++)
+                        {
+                            c = client.read();
+                            val += c;
+                        }
+
+                        int valor = val.toInt();
+                        ApitarBuzzer(valor);
+                        mensagem.concat('P');
+                        mensagem.concat('#');
+                        client.println(mensagem);
+                        mensagem = ""; 
+                        break;
+                    case '1':
+                        client.println(erro);
+                        break;
+                    
+                    default:
+                        client.println(erro);
+                        break;
+                    }
+
+                    break;
+
+                
+                default:
+                    client.println(erro);
+                    break;
                 }
-                // every line of text received from the client ends with \r\n
-                if (c == '\n') {
-                    // last character on line of received text
-                    // starting new line with next character read
-                    currentLineIsBlank = true;
-                } 
-                else if (c != '\r') {
-                    // a text character was received from client
-                    currentLineIsBlank = false;
-                }
+
             } // end if (client.available())
         } // end while (client.connected())
-        delay(1);      // give the web browser time to receive the data
-        client.stop(); // close the connection
-        RESET;
+        delay(5);
+        // give the web browser time to receive the data
+        //RESET;
+        //client.stop();
     } // end if (client)
+    
 }
