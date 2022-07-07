@@ -51,7 +51,7 @@ void Conectar(char* ip){
 }
 
 void MenuInicial(){
-    //192.168.0.116 ou 117
+    //192.168.0.116
     clrscr();
     printf("MENU INICIAL\n\n");
     printf("Digite o ip que deseja conectar: ");
@@ -71,18 +71,6 @@ void MenuInicial(){
 void EncerrarConexao(){
     ip[0] = '\0';
     MenuInicial();
-}
-void Sair(){
-    clrscr();
-    message = "EXIT#";
-    
-    send(s , message , strlen(message) , 0);
-    tamResposta = recv(s , server_reply , 2000 , 0);
-    server_reply[tamResposta] = '\0';
-    puts(server_reply);
-    printf("Aperte Enter para continuar");
-    scanf("%d", &dummy);
-    exit(0);
 }
 
 void MenuPrincipal(){
