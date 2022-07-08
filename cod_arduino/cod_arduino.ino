@@ -27,42 +27,6 @@ String confereErro;
 int Buzzer = 4;
 DHT dht(DHTPIN, DHTTYPE);//Inicializando o objeto dht do tipo DHT passando como parâmetro o pino (DHTPIN) e o tipo do sensor (DHTTYPE)
 
-//Funções
-void ApitarBuzzer(int porcentagem){
-    int frequencia = porcentagem*15;
-    tone(Buzzer, frequencia);
-    String aux = String(porcentagem);
-    int tal = aux.length();
-    
-    switch (tal)
-    {
-    case 1:
-        mensagem.concat("00");
-        mensagem.concat(String(porcentagem));
-        valBuzzer = "";
-        valBuzzer.concat("00");
-        valBuzzer = String(porcentagem);
-        break;
-    case 2:
-        mensagem.concat("0");
-        mensagem.concat(String(porcentagem));
-        valBuzzer = "";
-        valBuzzer.concat("0");
-        valBuzzer = String(porcentagem);
-        break;
-    case 3:
-        mensagem.concat(String(porcentagem));
-        valBuzzer = "";
-        valBuzzer = String(porcentagem);
-        break;
-    
-    default:
-        break;
-    }
-}
-
-
-
 void setup()
 {
     Ethernet.begin(mac, ip);  // initialize Ethernet device
@@ -94,7 +58,7 @@ void loop()
                     break;
                 case 'E':
                         noTone(Buzzer);
-                            client.stop(); // close the connection
+                        client.stop(); // close the connection
 
                     // for (int i = 0; i < 4; i++)
                     // {
@@ -114,7 +78,7 @@ void loop()
                     c = client.read();
                     switch (c)
                     {
-                    case '1':
+                    case '0':
                         mensagem = "T";
                         c = client.read();
                         c = client.read();
@@ -141,13 +105,18 @@ void loop()
                             default:
                                 break;
                             }
+                        
                         }
                         mensagem.concat('C');
                         mensagem.concat('#');
+                        if((c = client.read()) != '#'){
+                            client.println(erro);
+                            break;
+                        }
                         client.println(mensagem);
                         mensagem = "";
                         break;
-                    case '0':
+                    case '1':
                         mensagem = "Z0";
                         c = client.read();
                         c = client.read();
@@ -161,6 +130,10 @@ void loop()
 
                         mensagem.concat('P');
                         mensagem.concat('#');
+                        if((c = client.read()) != '#'){
+                            client.println(erro);
+                            break;
+                        }
                         client.println(mensagem);
                         mensagem = ""; 
                         break;
@@ -186,9 +159,42 @@ void loop()
                         }
 
                         int valor = val.toInt();
-                        ApitarBuzzer(valor);
+                        int frequencia = valor*15;
+    tone(Buzzer, frequencia);
+    String aux = String(valor);
+    int tal = aux.length();
+    
+    switch (tal)
+    {
+    case 1:
+        mensagem.concat("00");
+        mensagem.concat(String(valor));
+        valBuzzer = "";
+        valBuzzer.concat("00");
+        valBuzzer.concat(String(valor));
+        break;
+    case 2:
+        mensagem.concat("0");
+        mensagem.concat(String(valor));
+        valBuzzer = "";
+        valBuzzer.concat("0");
+        valBuzzer.concat(String(valor));
+        break;
+    case 3:
+        mensagem.concat(String(valor));
+        valBuzzer = "";
+        valBuzzer.concat(String(valor));
+        break;
+    
+    default:
+        break;
+    }
                         mensagem.concat('P');
                         mensagem.concat('#');
+                        if((c = client.read()) != '#'){
+                            client.println(erro);
+                            break;
+                        }
                         client.println(mensagem);
                         mensagem = ""; 
                         break;
@@ -213,7 +219,7 @@ void loop()
         } // end while (client.connected())
         delay(5);
         // give the web browser time to receive the data
-        //RESET;
+        RESET;
         //client.stop();
     } // end if (client)
     

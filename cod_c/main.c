@@ -62,7 +62,7 @@ void MenuInicial(){
     tamResposta = recv(s , server_reply , 2000 , 0);
     server_reply[tamResposta] = '\0';
     puts(server_reply);
-    printf("Aperte Enter para continuar");
+    printf("Aperte Enter para continuar\n");
     scanf("%d", &dummy);
     MenuPrincipal();
     
@@ -78,8 +78,6 @@ void MenuPrincipal(){
     printf("Digite o comando que deseja enviar para o server (seguindo o protocolo)\n");
     scanf("%s", comando);
 
-    
-
     message = comando; 
 
     send(s , message , strlen(message) , 0);
@@ -89,11 +87,12 @@ void MenuPrincipal(){
     server_reply[tamResposta] = '\0';
     puts(server_reply);
 
-    if (comando == "EXIT#")
+    if (strcmp(comando, "EXIT#") == 0 )
     {
         EncerrarConexao();
     }
-    printf("Aperte Enter para continuar");
+
+    printf("Aperte Enter para continuar\n");
     scanf("%d", &dummy);
     MenuPrincipal();
 }
